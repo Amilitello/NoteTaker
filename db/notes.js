@@ -13,14 +13,28 @@ class Notes {
         return writeFileAsync("db/db.json", JSON.stringify(data))
     }
 
+    getNotes(){
+        return this.readNotes().then(data => {
+            let notes;
+            try{
+                notes = [].concat(JSON.parse(data))
+            }
+            catch(err){
+                notes = []
+            }
+            return notes
+        })
+    }
+
     addNotes(note){
+        const {title,text} = note
         const newNote = {title,text,id:uuidv1()}
-        return this.readNotes().then(data => [...data,newNote]).then(data => this.writeNotes(data)).then(() => newNote)
+        return this.getNotes().then(data => [...data,newNote]).then(data => this.writeNotes(data)).then(() => newNote)
 
     }
 
     deleteNotes(id){
-        return this.readNotes().then(data => data.filter(note => note.id !== id)).then(data => this.writeNotes(data))
+        return this.getNotes().then(data => data.filter(note => note.id !== id)).then(data => this.writeNotes(data))
     }
 
 
